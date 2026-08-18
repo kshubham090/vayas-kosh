@@ -1,0 +1,21 @@
+# Audio is never committed
+data/raw/
+
+# Generated hypotheses/artifacts (regenerate from audit harness, don't commit)
+data/transcripts/hypotheses/*
+!data/transcripts/hypotheses/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Secrets — Mozilla Data Collective token etc.
+.env
+
+# OS
+.DS_Store
+Thumbs.db

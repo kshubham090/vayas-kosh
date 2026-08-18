@@ -1,0 +1,19 @@
+# Secrets -- never commit
+**/.env
+.git.bak/
+
+# Raw downloaded data (multi-GB, gitignored in the vayas subproject too --
+# redundant here on purpose, this is a public repo)
+Project/vayas/data/raw/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db

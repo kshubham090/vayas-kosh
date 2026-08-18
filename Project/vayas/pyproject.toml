@@ -1,0 +1,44 @@
+[project]
+name = "vayas"
+version = "0.1.0"
+description = "Age-stratified evaluation of ASR — Hindi instantiation (Vyaskosh Paper 1)"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "transformers",
+    "jiwer",
+    "pydantic",
+    "scipy",
+    "numpy",
+    "krippendorff",
+    "requests",
+    "pyarrow",
+    "fsspec",
+    "aiohttp",
+    "soundfile",
+    "torchaudio",
+    "omnilingual-asr; sys_platform != 'win32'",  # fairseq2n (its native backend) ships no Windows wheels at all -- see omnilingual_system.py
+    "onnxruntime",  # onnxruntime-gpu needs a separate system CUDA Toolkit + cuDNN 9 install (not just the driver) -- see indicconformer_system.py; deferred, not currently worth the system-level install for a correctness-verified-but-CPU-fallback component
+    "onnx",
+    "pyctcdecode",
+]
+
+# kenlm (pyctcdecode's LM-decoding backend, needed for IndicWav2Vec's
+# Wav2Vec2ProcessorWithLM) is NOT listed here — its C extension does not
+# currently build against Python 3.13 (see indicwav2vec_system.py's
+# module docstring). Install it manually once that's resolved upstream.
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vayas"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
