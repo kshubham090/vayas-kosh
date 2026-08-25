@@ -4,6 +4,7 @@ data/raw/
 # Generated hypotheses/artifacts (regenerate from audit harness, don't commit)
 data/transcripts/hypotheses/*
 !data/transcripts/hypotheses/.gitkeep
+data/transcripts/hypotheses_pilot/
 
 # Python
 __pycache__/

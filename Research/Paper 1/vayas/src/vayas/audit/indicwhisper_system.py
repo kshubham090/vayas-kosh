@@ -75,11 +75,22 @@ class IndicWhisperSystem(ASRSystem):
     def _ensure_loaded(self) -> None:
         if self._model is not None:
             return
+        import torch
         from transformers import GenerationConfig, WhisperForConditionalGeneration, WhisperProcessor
 
         checkpoint_dir = self._download_and_extract()
         self._processor = WhisperProcessor.from_pretrained(checkpoint_dir)
-        self._model = WhisperForConditionalGeneration.from_pretrained(checkpoint_dir).to(self._device)
+        # Explicit dtype, not the 'auto' default: a real run on Kaggle
+        # (both a P100 and a T4, so not GPU-specific) hit "Input type
+        # (float) and bias type (c10::Half) should be the same" --
+        # 'auto' silently loaded this checkpoint's weights in fp16 while
+        # the processor's output stayed float32. Loading explicitly in
+        # fp32 sidesteps the mismatch entirely (fp16 was only ever needed
+        # for VRAM headroom on the 4GB laptop GPU, and this checkpoint is
+        # small enough to not need it).
+        self._model = WhisperForConditionalGeneration.from_pretrained(
+            checkpoint_dir, dtype=torch.float32
+        ).to(self._device)
 
         # This checkpoint ships a pre-multilingual-API generation_config.json
         # (confirmed by a real ValueError: "generation config is outdated
@@ -101,10 +112,9 @@ class IndicWhisperSystem(ASRSystem):
         # forced_decoder_ids= is removed in this transformers version
         # (confirmed by a real ValueError) -- language/task are now passed
         # to generate() directly instead of pre-computing prompt ids.
+        input_features = inputs.input_features.to(self._device, dtype=self._model.dtype)
         with torch.no_grad():
-            predicted_ids = self._model.generate(
-                inputs.input_features.to(self._device), language=lang, task="transcribe"
-            )
+            predicted_ids = self._model.generate(input_features, language=lang, task="transcribe")
         return self._processor.batch_decode(predicted_ids, skip_special_tokens=True)[0].strip()
 
     def unload(self) -> None:

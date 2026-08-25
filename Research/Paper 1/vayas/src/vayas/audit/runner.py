@@ -10,6 +10,7 @@ should not be restarted from scratch over one bad file.
 
 from __future__ import annotations
 
+import traceback
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, NamedTuple
@@ -30,6 +31,9 @@ class RunFailure:
     system_name: str
     utt_id: str
     error: str
+    # str(e) alone is often useless for real debugging (e.g. a bare
+    # KeyError prints just the key name) -- keep the full traceback too.
+    traceback: str = ""
 
 
 def run_batch(
@@ -52,7 +56,10 @@ def run_batch(
                 try:
                     hypothesis = system.transcribe(utt.audio_path, utt.lang)
                 except Exception as e:  # noqa: BLE001 - one bad utterance must not abort the batch
-                    failures.append(RunFailure(system_name=system.name, utt_id=utt.utt_id, error=str(e)))
+                    failures.append(RunFailure(
+                        system_name=system.name, utt_id=utt.utt_id, error=str(e),
+                        traceback=traceback.format_exc(),
+                    ))
                     continue
                 out_path.write_text(hypothesis, encoding="utf-8")
         finally:
