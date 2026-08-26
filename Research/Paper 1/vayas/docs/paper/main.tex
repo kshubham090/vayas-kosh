@@ -245,7 +245,13 @@ best-performing system \emph{on this benchmark, as measured}, and we explicitly 
 reflects a fair, contamination-free zero-shot comparison against the other three systems. Framing
 its advantage as an architecture or training-recipe insight (rather than a possible data-leakage
 artifact) is not supportable without the speaker- or utterance-level training manifest AI4Bharat
-has not published, and we do not make that framing (see Section~\ref{sec:discussion}).
+has not published, and we do not make that framing (see Section~\ref{sec:discussion}). We raise
+this as a general recommendation rather than a complaint specific to AI4Bharat, whose IndicVoices,
+IndicVoices-R, and Vistaar releases are themselves valuable, well-documented contributions this
+paper relies on directly: publishing a speaker- or utterance-level training manifest alongside
+released ASR checkpoints -- or at minimum a clear per-model statement of exactly which corpora
+contributed training data -- would let audits like this one resolve exactly this kind of question
+rather than having to flag it as an open risk.
 
 \section{Methodology}
 
