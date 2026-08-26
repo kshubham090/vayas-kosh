@@ -57,13 +57,13 @@ commercial ASR in English have found substantial disparities in error rate acros
 groups defined by race \citep{koenecke2020racial}, and structural audits of other speech and
 vision systems have shown that undisclosed performance gaps across a benchmark's underlying
 population are common when systems are evaluated only in aggregate \citep{buolamwini2018gender}.
-Age is a comparatively under-studied axis for this kind of audit, and Hindi -- despite being
-among the most widely spoken languages in the world -- has very little public infrastructure for
+Age is a comparatively under-studied axis for this kind of audit, and Hindi, despite being
+among the most widely spoken languages in the world, has very little public infrastructure for
 answering this question at all: the most commonly used open Hindi ASR benchmark, Common Voice,
 turns out to have almost no \emph{confirmed} elderly speakers once its self-reported age field is
 actually counted (Section~\ref{sec:data}).
 
-This paper reports a zero-shot audit -- no system is fine-tuned or otherwise modified -- of four
+This paper reports a zero-shot audit (no system is fine-tuned or otherwise modified) of four
 ASR systems on Hindi speech, following the general blueprint of building a benchmark and auditing
 existing systems against it rather than training anything new \citep{buolamwini2018gender}, and
 adopting the matched-cohort design of \citet{koenecke2020racial}: an elderly group and a
@@ -82,7 +82,7 @@ currently show up at the sample size this study could run.
 \citet{koenecke2020racial} audited five commercial ASR systems on African American Vernacular
 English versus white American English using matched speaker cohorts, finding substantially higher
 word error rates for Black speakers across every system tested; the matched-cohort design used
-here -- same corpus, same recording conditions, one demographic axis varied -- follows that
+here (same corpus, same recording conditions, one demographic axis varied) follows that
 methodology directly. \citet{buolamwini2018gender} established the broader structural pattern this
 work follows: constructing a benchmark with genuine population coverage and auditing already-deployed
 systems against it, rather than proposing a new model. \citet{pellegrini2012impact} is the closest
@@ -201,16 +201,16 @@ instances for the full batch runs), so were run against a smaller, still duratio
 non-overlapping union of
 three sampling passes (elderly and control positions from each earlier pass were explicitly
 excluded before sampling the next, using the same deterministic scan order and a fresh random
-seed per pass -- see \texttt{scripts/} in the released code, which recovers each pass's exact
+seed per pass; see \texttt{scripts/} in the released code, which recovers each pass's exact
 sample by replaying its seed rather than only checking for accidental overlap after the fact):
 4,807 unique clips total, comprising 2,434 elderly and 2,373 control clips.
 
-Duration-matching alone does not equalize per-speaker clip counts, and it does not. Elderly
+Duration-matching alone does not equalize per-speaker clip counts. Elderly
 speakers contribute far more clips each than control speakers: 77.98 clips/speaker (elderly) vs.\
 11.95 (control) in the MMS/IndicConformer pool, and 48.68 vs.\ 7.58 in the Whisper/IndicWhisper
 pool. Since our statistics aggregate to one mean per speaker before computing confidence intervals
 and effect sizes (Section~\ref{sec:stats}), control speaker-level means are computed from far
-fewer clips each and are correspondingly noisier -- this is the direct cause of at least one
+fewer clips each and are correspondingly noisier; this is the direct cause of at least one
 visibly wide control-cohort confidence interval in Table~\ref{tab:summary} (IndicConformer
 control CER). Age remains the only \emph{demographic} axis deliberately varied between cohorts,
 but it is not the only difference in how each cohort's statistics are computed, and we do not
@@ -220,8 +220,8 @@ this sampling design (Section~\ref{sec:limitations}).
 \subsection{Training-data contamination risk}
 \label{sec:contamination}
 
-A serious caveat applies specifically to IndicConformer and IndicWhisper, and we did not have it
-fully resolved before running the audit. IndicVoices-R, this paper's evaluation corpus, is
+A serious caveat applies specifically to IndicConformer and IndicWhisper, one we were not able to
+fully resolve before running the audit. IndicVoices-R, this paper's evaluation corpus, is
 explicitly described by its own authors as derived from IndicVoices \citep{indicvoices2024} via an
 audio-restoration pipeline (demixing, dereverberation, denoising) applied to the same underlying
 recordings, not an independently collected corpus \citep{indicvoicesr}. Publicly available
@@ -238,7 +238,7 @@ same underlying recordings and transcripts as some or all of this paper's evalua
 relative to the two systems in this audit with no plausible IndicVoices exposure (Whisper large-v3,
 MMS). One partial, non-conclusive counter-data-point: IndicConformer also produced an exact-match
 transcript on a single Common Voice Hindi clip during pilot validation (a corpus wholly unrelated
-to IndicVoices), suggesting at least some of its accuracy is not corpus-specific -- but a single
+to IndicVoices), suggesting at least some of its accuracy is not corpus-specific, but a single
 clip cannot settle a corpus-level contamination question, and we do not treat it as doing so.
 Given this, we report IndicConformer's result descriptively rather than causally: it is the
 best-performing system \emph{on this benchmark, as measured}, and we explicitly do not claim this
@@ -249,8 +249,8 @@ has not published, and we do not make that framing (see Section~\ref{sec:discuss
 this as a general recommendation rather than a complaint specific to AI4Bharat, whose IndicVoices,
 IndicVoices-R, and Vistaar releases are themselves valuable, well-documented contributions this
 paper relies on directly: publishing a speaker- or utterance-level training manifest alongside
-released ASR checkpoints -- or at minimum a clear per-model statement of exactly which corpora
-contributed training data -- would let audits like this one resolve exactly this kind of question
+released ASR checkpoints, or at minimum a clear per-model statement of exactly which corpora
+contributed training data, would let audits like this one resolve exactly this kind of question
 rather than having to flag it as an open risk.
 
 \section{Methodology}
@@ -289,7 +289,7 @@ matching Whisper large's architecture, $\sim$1.55B parameters), not the archive'
 \texttt{whisper-medium-hi\_alldata\_multigpu} checkpoint ($d_{model}=1024$, 24+24 layers,
 $\sim$769M parameters). We flag this deliberately: our original loading code selected whichever
 checkpoint a directory scan happened to return first, which is filesystem-order-dependent and was
-not a considered choice at the time -- we verified after the fact which one actually ran, and have
+not a considered choice at the time; we verified after the fact which one actually ran, and have
 since fixed the loader to select explicitly rather than by scan order.
 \end{itemize}
 
@@ -316,7 +316,7 @@ preserves disfluencies and false starts rather than the cleaned \texttt{normaliz
 a deliberate choice for measuring spontaneous-speech ASR, but it has a real methodological
 consequence: no system in this audit is trained to emit disfluencies, so any age-related
 difference in disfluency rate could in principle produce a WER/CER gap attributable to reference
-style rather than acoustic recognition failure -- the same direction this paper's central
+style rather than acoustic recognition failure, in the same direction this paper's central
 hypothesis (elderly speech is harder to recognize) would also predict. We tested this directly by
 re-scoring every clip against \texttt{normalized} references and recomputing every effect size in
 Table~\ref{tab:effects}: all 8 effects keep the same sign under both reference styles, and
@@ -350,11 +350,11 @@ underpowered test is not evidence of no effect.
 Figure~\ref{fig:wercer} and Table~\ref{tab:summary} show WER and CER for all four systems, split
 by age cohort. IndicConformer has the lowest error rate by a wide margin (WER 17.1\% elderly /
 18.3\% control) despite being architecturally the smallest of the four models tested (600M
-parameters vs.\ $\sim$1B--1.55B for the others) -- \textbf{but this comparison carries the
+parameters vs.\ $\sim$1B--1.55B for the others), \textbf{but this comparison carries the
 training-data contamination risk flagged in Section~\ref{sec:contamination} and is not presented
 as a clean zero-shot result.} MMS-1B and Whisper large-v3 are comparable to each other (WER
-$\approx$ 35--36\% in both cohorts). IndicWhisper -- an India-specialized fine-tune of a
-Whisper large-architecture checkpoint (Section~\ref{sec:systems}) -- is instead the weakest of the
+$\approx$ 35--36\% in both cohorts). IndicWhisper, an India-specialized fine-tune of a
+Whisper large-architecture checkpoint (Section~\ref{sec:systems}), is instead the weakest of the
 four systems by a substantial margin (WER 46.4\% control / 50.5\% elderly), despite sharing
 IndicConformer's exposure to AI4Bharat's training data ecosystem; that a same-provenance system
 performs \emph{worst}, not best, is itself a data point against treating training-data overlap as
@@ -393,7 +393,7 @@ IndicWhisper & Control & 46.37 [43.40, 50.24] & 30.74 [28.56, 33.18] & 313 \\
 
 Figure~\ref{fig:effects} and Table~\ref{tab:effects} report Cohen's $d$ and rank-biserial $r$ for
 every system/metric combination. Effect sizes are small throughout ($|d| < 0.2$ in all eight
-system$\times$metric pairs) -- below this sample's own minimum detectable effect of $d = 0.427$
+system$\times$metric pairs), below this sample's own minimum detectable effect of $d = 0.427$
 at 80\% power (Section~\ref{sec:stats}), so every null result here is genuinely uninformative about
 whether a small true effect exists, not evidence that none does. Three raw $p$-values fall under
 .05 (IndicWhisper WER and CER, Whisper large-v3 CER), but \textbf{none survive Benjamini--Hochberg
@@ -401,11 +401,11 @@ correction across the 8 tests} (all corrected $p \geq 0.10$; Table~\ref{tab:effe
 IndicWhisper's WER/CER pattern as suggestive rather than confirmed: both raw $p$-values are the
 smallest in the table, both point the same direction (elderly disadvantage), and one of the two
 survives even after excluding IndicWhisper's degenerate-output clips (CER, $p=0.040$; WER does
-not, $p=0.085$; Section~\ref{sec:degenerate}) -- a plausible real signal at the sample size this
+not, $p=0.085$; Section~\ref{sec:degenerate}), a plausible real signal at the sample size this
 audit could run, but not one we can call statistically confirmed. Whisper large-v3's CER effect
 flips sign between Cohen's $d$ ($-0.045$, elderly slightly better on raw data) and the rank-biserial
-estimate ($+0.183$, elderly slightly worse by rank) -- a real, not erroneous, consequence of a
-mean-based and a rank-based statistic disagreeing under a skewed distribution -- and does not
+estimate ($+0.183$, elderly slightly worse by rank), a real, not erroneous, consequence of a
+mean-based and a rank-based statistic disagreeing under a skewed distribution, and does not
 survive correction either; we report both statistics rather than picking the one that tells a
 cleaner story.
 
@@ -453,7 +453,7 @@ computation artifact in our pipeline.
 We quantify this directly by counting clips with WER $>$ 1.0 as a ``degenerate-output rate''
 (Figure~\ref{fig:degenerate}, Table~\ref{tab:degenerate}). This threshold is a deliberately simple,
 mathematically motivated proxy (WER $>$ 1.0 is only reachable via runaway insertion), not a
-repetition-specific detector (e.g.\ max-$n$-gram-repeat count) -- we manually confirmed a sample of
+repetition-specific detector (e.g.\ max-$n$-gram-repeat count); we manually confirmed a sample of
 flagged clips shows genuine repetition, but the threshold is also biased toward shorter references,
 which cross it with fewer excess words than longer ones. IndicWhisper degenerates on 7.16\% of its
 clips, 16--80x the rate of the other three systems individually (0.09\%, 0.34\%, 0.46\%; the range
@@ -487,11 +487,11 @@ IndicWhisper & 4{,}807 & \textbf{7.16\%} & 7.60\% & 6.70\% \\
 \end{table}
 
 The by-cohort breakdown matters for two reasons. First, IndicWhisper's degenerate rate is only
-modestly higher for elderly speakers (7.60\% vs.\ 6.70\%) -- the pathology is not an
+modestly higher for elderly speakers (7.60\% vs.\ 6.70\%): the pathology is not an
 elderly-specific failure mode, it is a general short-clip failure mode that elderly speakers hit
 slightly more often, consistent with (though not proof of) the speaking-rate relationship in
 Section~\ref{sec:speakingrate}. Second, IndicConformer's own degenerate clips are entirely
-concentrated in the control cohort (7 of 7, 0.18\% vs.\ 0.00\% elderly) -- this, not a general
+concentrated in the control cohort (7 of 7, 0.18\% vs.\ 0.00\% elderly); this, not a general
 control-cohort noise property, is what produces IndicConformer's unusually wide control CER
 confidence interval in Table~\ref{tab:summary} (a handful of outlier clips dominating a
 per-speaker mean), and is a second concrete illustration of why the per-speaker clip-count
@@ -500,7 +500,7 @@ imbalance noted in Section~\ref{sec:matching} matters in practice, not just in p
 Recomputing WER/CER with degenerate clips excluded (Table~\ref{tab:trimmed}) shows this pathology
 explains part, not all, of IndicWhisper's disadvantage: trimmed WER drops from 50.5\% to 42.1\%
 (elderly) and 46.4\% to 38.9\% (control), and the elderly-control WER gap itself shrinks from 4.18
-to 3.20 percentage points -- a 23\% reduction, not the majority of the gap. IndicWhisper remains
+to 3.20 percentage points, a 23\% reduction, not the majority of the gap. IndicWhisper remains
 clearly the worst-performing system of the four even after trimming, and re-running the
 significance tests on trimmed data (Section~\ref{sec:stats}'s method, unchanged) shows the
 elderly-disadvantage signal itself is sensitive to this choice: CER stays nominally significant
@@ -544,7 +544,7 @@ small IndicConformer and IndicWhisper correlations are essentially unchanged by 
 ($\rho=-0.005 \to -0.005$ and $\rho=-0.070 \to -0.046$ respectively). We had originally speculated
 that slower, more hesitant speech is ``plausibly more common among elderly speakers'' as a
 mediating mechanism; testing this directly (per-speaker mean speaking rate, elderly vs.\ control)
-shows it is not supported in this corpus -- elderly speakers' mean rate (2.58 words/sec) is only
+shows it is not supported in this corpus: elderly speakers' mean rate (2.58 words/sec) is only
 marginally lower than control's (2.63 words/sec), and the difference is not significant
 (Mann-Whitney $p=0.41$). The speaking-rate/WER association is real but not a demonstrated channel
 for this paper's age comparisons specifically.
@@ -568,7 +568,7 @@ matched-cohort design was built to produce, and we think reporting both honestly
 they fall short of confirmation, is more useful than reporting either as settled.
 
 The near-null age effect for MMS-1B, IndicConformer, and Whisper large-v3 is not evidence that
-elderly-speaker ASR accessibility is a solved problem in general -- every one of these null results
+elderly-speaker ASR accessibility is a solved problem in general: every one of these null results
 sits below this sample's minimum detectable effect ($d=0.427$--$0.430$ at 80\% power;
 Section~\ref{sec:stats}), so the honest reading is ``no large effect detected at this sample size,''
 not ``no effect exists.'' IndicWhisper's WER/CER pattern is the kind of result a matched-cohort
