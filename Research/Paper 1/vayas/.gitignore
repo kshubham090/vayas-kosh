@@ -17,6 +17,14 @@ venv/
 # Secrets — Mozilla Data Collective token etc.
 .env
 
+# LaTeX build byproducts (regenerate via pdflatex/bibtex, don't commit)
+docs/paper/*.aux
+docs/paper/*.log
+docs/paper/*.out
+docs/paper/*.bbl
+docs/paper/*.blg
+docs/paper/*.toc
+
 # OS
 .DS_Store
 Thumbs.db

@@ -70,7 +70,24 @@ class IndicWhisperSystem(ASRSystem):
                 f"{HINDI_CHECKPOINT_URL} — the zip's internal layout may not "
                 "match a standard Hugging Face checkpoint. Inspect manually."
             )
-        return candidates[0]
+        # This archive ships two Hindi checkpoints (a Whisper-large-
+        # architecture fine-tune, "whisper-large-hi-*", and a
+        # Whisper-medium one, "whisper-medium-hi_*") -- confirmed by
+        # inspecting each candidate's own config.json (d_model/layer
+        # counts). An earlier version of this function returned
+        # candidates[0], whichever directory a filesystem scan happened
+        # to list first -- not a deliberate choice, and silently
+        # filesystem-order-dependent. Select the large checkpoint
+        # explicitly instead, since that's the one this project's
+        # published results (paper Section 4.1) are based on.
+        large = [c for c in candidates if "large" in c.name]
+        if len(large) != 1:
+            raise RuntimeError(
+                f"Expected exactly one 'large' checkpoint dir among {candidates}, "
+                f"found {len(large)} -- archive layout may have changed, update "
+                "this selection logic rather than falling back to an arbitrary pick."
+            )
+        return large[0]
 
     def _ensure_loaded(self) -> None:
         if self._model is not None:
