@@ -42,8 +42,11 @@ concentrated on short utterances. Age-cohort effect sizes are small across all f
 (Cohen's $d < 0.2$ in every case); one nominally significant elderly disadvantage (IndicWhisper,
 $p = 0.032$--$0.036$) does not survive correction for multiple comparisons across the eight
 system-metric tests, and is below this sample's minimum detectable effect size, so we report it
-as suggestive, not confirmed. We release the full zero-shot audit pipeline, matched-cohort
-sampling code, and per-clip results.
+as suggestive, not confirmed. We tested and ruled out one alternative explanation directly:
+re-scoring every clip against a disfluency-free reference transcript (rather than the
+disfluency-preserving one used throughout) leaves all eight effect signs, and IndicWhisper's
+pattern specifically, essentially unchanged. We release the full zero-shot audit pipeline,
+matched-cohort sampling code, and per-clip results.
 \end{abstract}
 
 \section{Introduction}
@@ -293,6 +296,7 @@ that the systems are unusable in principle. A fifth system, Sarvam (a billed API
 in-scope but deferred pending an explicit cost decision, and is not included in the results below.
 
 \subsection{Metrics}
+\label{sec:metrics}
 
 For every clip with a non-empty gold reference, we compute Word Error Rate (WER) and Character
 Error Rate (CER) via \texttt{jiwer} \citep{jiwer}, using its default whitespace word tokenization
@@ -304,14 +308,17 @@ proxy (reference word count divided by clip duration).
 We use IndicVoices-R's \texttt{verbatim} field as the gold reference throughout, since it
 preserves disfluencies and false starts rather than the cleaned \texttt{normalized} field. This is
 a deliberate choice for measuring spontaneous-speech ASR, but it has a real methodological
-consequence we did not fully control for: no system in this audit is trained to emit disfluencies,
-so any age-related difference in disfluency rate would itself produce a WER/CER gap attributable
-to reference style, not acoustic recognition failure -- the same direction this paper's central
-hypothesis (elderly speech is harder to recognize) would also predict. We did not have time to
-re-run this analysis against \texttt{normalized} references before this draft; doing so, and
-showing the effect direction holds under both reference styles, is the most direct way to
-strengthen or overturn this paper's age-effect claims, and is the top item for follow-up work
-(Section~\ref{sec:limitations}).
+consequence: no system in this audit is trained to emit disfluencies, so any age-related
+difference in disfluency rate could in principle produce a WER/CER gap attributable to reference
+style rather than acoustic recognition failure -- the same direction this paper's central
+hypothesis (elderly speech is harder to recognize) would also predict. We tested this directly by
+re-scoring every clip against \texttt{normalized} references and recomputing every effect size in
+Table~\ref{tab:effects}: all 8 effects keep the same sign under both reference styles, and
+IndicWhisper's WER/CER pattern in particular is essentially unchanged ($d=0.136$/$0.181$
+normalized vs.\ $0.139$/$0.187$ verbatim; still nominally significant, still short of surviving
+Benjamini--Hochberg correction, under both scorings). The disfluency confound does not explain away
+this paper's age-effect signal, which is a real strengthening of the IndicWhisper result even
+though it remains statistically suggestive rather than confirmed (Section~\ref{sec:stats}).
 
 \subsection{Statistics}
 \label{sec:stats}
@@ -589,12 +596,13 @@ control speakers across the two system pools). This inflates the effective preci
 per-speaker means relative to control ones and is the direct, confirmed cause of at least one
 unusually wide confidence interval in this paper's results (IndicConformer control CER,
 Section~\ref{sec:degenerate}).
-\item \textbf{Gold-reference confound}: we score against \texttt{verbatim} transcripts, which
-preserve disfluencies no audited system is trained to produce. Any elderly-control difference in
-disfluency rate would inflate WER/CER gaps through reference style alone, in the same direction as
-this paper's substantive hypothesis. We did not re-run the analysis against \texttt{normalized}
-references before this draft; doing so is the highest-priority follow-up for confirming or
-overturning this paper's age-effect claims.
+\item \textbf{Gold-reference confound, tested}: we score against \texttt{verbatim} transcripts,
+which preserve disfluencies no audited system is trained to produce, raising the possibility that
+an elderly-control disfluency-rate difference alone could inflate WER/CER gaps. We re-scored every
+clip against \texttt{normalized} references to test this directly (Section~\ref{sec:metrics}); all
+8 age-effect signs are unchanged and IndicWhisper's pattern is essentially identical under both
+scorings. This does not resolve the multiple-comparison caveat, but it does rule out disfluency
+scoring as the source of the signal that exists.
 \item \textbf{Decoding configuration is underspecified}: beam size, temperature fallback, and
 repetition-penalty settings were left at library defaults for Whisper large-v3 and IndicWhisper
 and were not recorded per-run. Since Whisper's reference implementation ships a temperature-fallback
